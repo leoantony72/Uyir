@@ -1,0 +1,156 @@
+.reportCard {
+  border-radius: 20px;
+  background-color: #fff;
+  width: 1024px;
+  max-width: 100%;
+  padding: 21px 51px 12px;
+  border: 3px solid #000;
+  margin-top: 41px;
+}
+
+.cardContent {
+  gap: 20px;
+  display: flex;
+}
+
+.mainSection {
+  flex-grow: 1;
+}
+
+.reportDetails {
+  gap: 20px;
+  display: flex;
+}
+
+.imageContainer {
+  display: flex;
+  flex-direction: column;
+  width: 36%;
+}
+
+.reportImage {
+  border-radius: 10px;
+  background-color: #d9d9d9;
+  width: 175px;
+  height: 146px;
+  margin: 0 auto;
+  object-fit: cover;
+}
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  width: 45%;
+}
+
+.reportInfo {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  align-items: start;
+  color: #3f3f3f;
+  text-align: left;
+  font-family: Poppins, sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.location {
+  align-self: stretch;
+  margin-top: 10px;
+}
+
+.coordinates {
+  font-size: 20px;
+  margin-top: 8px;
+}
+
+.date {
+  color: #747474;
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.statusContainer {
+  display: flex;
+  flex-direction: column;
+  width: 21%;
+}
+
+.status {
+  border-radius: 10px;
+  color: #fff;
+  text-align: center;
+  width: 100%;
+  margin: auto 0;
+  padding: 45px 30px;
+  font-family: Poppins, sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.statusFixed {
+  background-color: #2ed47a;
+}
+
+.statusPending {
+  background-color: #f7685b;
+}
+
+@media (max-width: 991px) {
+  .reportCard {
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  .cardContent {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .reportDetails {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .imageContainer {
+    width: 100%;
+  }
+
+  .infoContainer {
+    width: 100%;
+  }
+
+  .reportInfo {
+    align-items: center;
+    text-align: center;
+  }
+
+  .status {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reportCard {
+    padding: 15px;
+  }
+
+  .reportImage {
+    width: 100%;
+    max-width: 175px;
+  }
+
+  .reportInfo {
+    font-size: 20px;
+  }
+
+  .coordinates,
+  .date {
+    font-size: 16px;
+  }
+}

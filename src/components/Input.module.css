@@ -1,0 +1,38 @@
+.inputWrapper {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.inputLabel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(114, 136, 199, 1);
+}
+
+.icon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  width: 18px;
+}
+
+.input {
+  border-radius: 10px;
+  background-color: rgba(243, 243, 243, 1);
+  font-weight: 400;
+  padding: 29px 45px;
+  border: 2px solid rgba(114, 136, 199, 1);
+  width: 100%;
+}
+
+@media (max-width: 991px) {
+  .input {
+    max-width: 100%;
+    margin-right: 3px;
+    white-space: initial;
+    padding: 0 20px;
+  }
+}
