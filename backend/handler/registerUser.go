@@ -1,38 +1,37 @@
 package handler
 
 import (
-	"encoding/json"
-	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/leoantony72/Uyir/model"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// RegisterUser registers a new user and saves it to PostgreSQL
 func RegisterUser(c *gin.Context) {
-	user := model.User{}
-	err := c.BindJSON(&user)
-	if err != nil {
-		c.JSON(400, gin.H{"message": "Some fields are missing", "err": err.Error()})
+	var user model.User
+
+	// Bind JSON input to user struct
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input", "error": err.Error()})
 		return
 	}
 
+	// Hash the password before saving
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(500, gin.H{"message": "Error hashing password", "err": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error hashing password", "error": err.Error()})
 		return
 	}
 	user.Password = string(hashedPassword)
-	userKey := "user:" + user.Name
 
-	userData, err := json.Marshal(user)
-	if err != nil {
-		c.JSON(500, gin.H{"message": "Error marshaling user data", "err": err.Error()})
+	// Save user to PostgreSQL
+	result := Db.Create(&user)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error saving user", "error": result.Error.Error()})
 		return
 	}
 
-	r := Db.Set(Ctx, userKey, userData, 0)
-	fmt.Println(r)
-
-	c.JSON(200, gin.H{"message": "User registered"})
+	c.JSON(http.StatusOK, gin.H{"message": "User registered", "id": user.ID})
 }

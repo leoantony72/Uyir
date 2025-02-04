@@ -1,15 +1,19 @@
 version: "3.3"
 
 services:
-  redis:
-    container_name: "uyir_redis"
-    image: redis:alpine
+  postgres:
+    container_name: "uyir_postgres"
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: uyir
     ports:
-      - "6379:6379"
+      - "5432:5432"
     volumes:
-      - db:/data # Corrected Redis data path
+      - postgres_data:/var/lib/postgresql/data
     logging:
       driver: "none"
 
 volumes:
-  db:
+  postgres_data:
