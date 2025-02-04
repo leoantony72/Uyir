@@ -1,21 +1,12 @@
 package database
 
-import (
-	"log"
-	"test/internal/model"
+import "github.com/redis/go-redis/v9"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-)
-
-func StartPostgres() *gorm.DB {
-	dbUrl := "postgres://pg:pass@localhost:5432/test"
-
-	db, err := gorm.Open(postgres.Open(dbUrl), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	db.AutoMigrate(&model.User{})
-	return db
+func StartRedis() *redis.Client {
+	redis := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+	return redis
 }
