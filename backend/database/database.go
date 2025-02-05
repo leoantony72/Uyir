@@ -13,7 +13,7 @@ func StartPostgres() *gorm.DB {
 	dbUser := "postgres"         // Username for PostgreSQL
 	dbPassword := "yourpassword" // Password for PostgreSQL
 	dbName := "uyir"             // Database name
-	dbHost := "localhost"    // Host name (service name in Docker Compose)
+	dbHost := "localhost"        // Host name (service name in Docker Compose)
 	dbPort := "5432"             // Default PostgreSQL port
 
 	// Create the PostgreSQL connection string
@@ -28,5 +28,6 @@ func StartPostgres() *gorm.DB {
 	// Perform migrations
 	model.Migrate(db)
 	model.MigrateSession(db)
+	model.MigrateReport(db)
 	return db
 }

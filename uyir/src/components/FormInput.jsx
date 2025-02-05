@@ -8,7 +8,7 @@ export const FormInput = ({
   id,
   value,
   onChange,
-  required = true,
+  required = true, // Default is required
   autoComplete,
 }) => {
   return (
@@ -34,7 +34,7 @@ export const FormInput = ({
         aria-label={label}
         value={value}
         onChange={onChange}
-        required={required}
+        required={required} // Dynamically set required
         autoComplete={autoComplete}
       />
     </div>

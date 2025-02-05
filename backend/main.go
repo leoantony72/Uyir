@@ -1,17 +1,33 @@
 package main
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/leoantony72/Uyir/handler"
+	"github.com/gin-contrib/cors"
+
 )
 
 func main() {
 	r := gin.Default()
 
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"}, // Change this if your frontend URL changes
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	r.GET("/", handler.GetData)
 
 	r.POST("/signup", handler.RegisterUser)
+
 	r.POST("/login", handler.LoginUser)
+
+	r.POST("/new", handler.NewReport)
 
 	r.Run(":6969")
 }
