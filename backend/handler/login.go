@@ -14,17 +14,13 @@ import (
 // Session expiry time
 const sessionTTL = 24 * time.Hour
 
-// LoginUser logs a user in and sets a session
 func LoginUser(c *gin.Context) {
 	loginRequest := model.User{}
-
-	// Parse login request
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "err": err.Error()})
 		return
 	}
 
-	// Retrieve user data from PostgreSQL
 	var storedUser model.User
 	if err := Db.Where("name = ?", loginRequest.Name).First(&storedUser).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -35,16 +31,13 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	// Compare stored hashed password with entered password
 	if err := bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(loginRequest.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid credentials"})
 		return
 	}
-
-	// Generate a session token
 	sessionToken := uuid.New().String()
 
-	// Store session token in the database (assuming you have a sessions table in PostgreSQL)
+	// Store session token in the db
 	session := model.Session{
 		Token:     sessionToken,
 		UserID:    storedUser.ID,
@@ -56,10 +49,8 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	// Set session token and user name as cookies
-	c.SetCookie("session_token", sessionToken, int(sessionTTL.Seconds()), "/", "", false, true)
-	c.SetCookie("user_name", storedUser.Name, int(sessionTTL.Seconds()), "/", "", false, true)
+	c.SetCookie("session_token", sessionToken, int(sessionTTL.Seconds()), "/", "", false, false)
+	c.SetCookie("user_name", storedUser.Name, int(sessionTTL.Seconds()), "/", "", false, false)
 
-	// Successful login response
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": storedUser.Name})
 }

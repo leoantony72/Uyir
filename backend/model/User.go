@@ -11,6 +11,7 @@ type User struct {
 	Name     string `json:"username" gorm:"unique;not null"`
 	Email    string `json:"email" gorm:"unique;not null"`
 	Password string `json:"password" gorm:"not null"`
+	Points   int    `json:"points"`
 }
 type Session struct {
 	ID        uint      `json:"id" gorm:"primaryKey;autoIncrement"`
@@ -20,24 +21,15 @@ type Session struct {
 }
 
 type Report struct {
-	ID        string `json:"id" gorm:"id"`
-	UserID    string `json:"uid" gorm:"user_id"`
-	Longitude string `json:"longitude" gorm:"longitude"`
-	Latitude  string `json:"latitude" gorm:"latitude"`
-	Place     string `json:"place" gorm:"place"`
+	ID        string    `json:"id" gorm:"id"`
+	UserID    string    `json:"uid" gorm:"user_id"`
+	Longitude string    `json:"longitude" gorm:"longitude"`
+	Latitude  string    `json:"latitude" gorm:"latitude"`
+	Place     string    `json:"place" gorm:"place"`
+	Date      time.Time `json:"date" gorm:"date"`
+	Status    string    `json:"status" gorm:"status"`
 }
 
-func MigrateSession(db *gorm.DB) {
-	// Auto-migrate User and Session tables
-	db.AutoMigrate(&User{}, &Session{})
-}
-
-func MigrateReport(db *gorm.DB) {
-	// Auto-migrate User and Session tables
-	db.AutoMigrate(&User{}, &Report{})
-}
-
-// Migrate function to create the table
 func Migrate(db *gorm.DB) {
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&User{}, &Session{}, &Report{})
 }

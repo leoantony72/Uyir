@@ -3,10 +3,9 @@ package main
 import (
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/leoantony72/Uyir/handler"
-	"github.com/gin-contrib/cors"
-
 )
 
 func main() {
@@ -28,6 +27,8 @@ func main() {
 	r.POST("/login", handler.LoginUser)
 
 	r.POST("/new", handler.NewReport)
+
+	r.GET("/user", handler.GetReportsAndPoints)
 
 	r.Run(":6969")
 }

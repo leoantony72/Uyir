@@ -80,7 +80,11 @@ export const Login = () => {
           required
         />
 
-        <SubmitButton text="Login" isLoading={isLoading} />
+        <SubmitButton
+          text="Login"
+          backgroundImage="https://cdn.builder.io/api/v1/image/assets/TEMP/0c35efe22f1408ff2bb603ae6f3950018e7d92be6a49165c0ce4635b4425268b?placeholderIfAbsent=true&apiKey=2fc17400dcd74914b50bcc9d036de5cf"
+          isLoading={isLoading}
+        />
       </form>
     </main>
   );
