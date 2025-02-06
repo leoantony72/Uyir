@@ -28,6 +28,8 @@ type Report struct {
 	Place     string    `json:"place" gorm:"place"`
 	Date      time.Time `json:"date" gorm:"date"`
 	Status    string    `json:"status" gorm:"status"`
+	FilePath  string    `json:"file"`
+	Type      string    `json:"type"`
 }
 
 func Migrate(db *gorm.DB) {
