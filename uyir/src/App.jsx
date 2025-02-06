@@ -2,13 +2,14 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import LoginPage from "./pages/LoginPage";
 // import TeacherDashboard from "./pages/TeacherDashboard.jsx";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 // import { onAuthStateChanged } from "firebase/auth";
 // import { auth } from "./firebase"; // Your Firebase config
 import "./App.css";
 import { SignUp } from "./pages/SignUp.jsx";
 import { Login } from "./pages/Login.jsx";
 import { ReportsPage } from "./pages/ReportsPage.jsx";
+
 
 const App = () => {
   const [user, setUser] = useState(null);
