@@ -4,9 +4,17 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"os"
+	"strconv"
 
+	"github.com/corona10/goimagehash"
 	"github.com/gin-gonic/gin"
 	"github.com/leoantony72/Uyir/model"
+	"path/filepath"
+
+	"image"
+	_ "image/jpeg"
+	_ "image/png"
 )
 
 // Define input structure
@@ -28,40 +36,93 @@ func haversine(lat1, lon1, lat2, lon2 float64) float64 {
 	return R * c
 }
 
+func computeHash(filePath string) (*goimagehash.ImageHash, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return goimagehash.PerceptionHash(img)
+}
+
 // SimilarReports function
 func SimilarReports(c *gin.Context) {
-	var input Input
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+	// Parse form values
+	latStr := c.PostForm("latitude")
+	lonStr := c.PostForm("longitude")
+	latitude, err := strconv.ParseFloat(latStr, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid latitude"})
+		return
+	}
+	longitude, err := strconv.ParseFloat(lonStr, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid longitude"})
 		return
 	}
 
-	// Debug: Print input coordinates
-	fmt.Printf("Input coordinates: Latitude=%f, Longitude=%f\n", input.Latitude, input.Longitude)
+	// Handle image file
+	file, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Image file is required"})
+		return
+	}
 
-	// Fetch all pending reports from the "reports" table
+	// Save to temporary path
+	tempPath := filepath.Join(os.TempDir(), file.Filename)
+	if err := c.SaveUploadedFile(file, tempPath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to save uploaded image"})
+		return
+	}
+	defer os.Remove(tempPath) // clean up temp file
+
+	// Compute perceptual hash for input image
+	inputHash, err := computeHash(tempPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to process input image"})
+		return
+	}
+
+	// Fetch pending reports
 	var reports []model.Report
 	if err := Db.Table("reports").Where("status = ?", "Pending").Find(&reports).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error fetching reports"})
 		return
 	}
 
-	// Debug: Print the number of pending reports found and their coordinates
-	fmt.Printf("Found %d pending reports\n", len(reports))
+	// Compare with reports
+	var similarReports []model.Report
 	for _, report := range reports {
-		fmt.Printf("Report ID %s: Latitude=%f, Longitude=%f\n", report.ID, report.Latitude, report.Longitude)
-	}
+		//500m proximity
+		distance := haversine(latitude, longitude, report.Latitude, report.Longitude)
+		if distance > 500 {
+			continue
+		}
 
-	// Filter reports within 500 meters (update threshold as needed)
-	var nearbyReports []model.Report
-	for _, report := range reports {
-		distance := haversine(input.Latitude, input.Longitude, report.Latitude, report.Longitude)
-		fmt.Printf("Distance to report %s: %f meters\n", report.ID, distance)
-		if distance < 500 { // Use 500 for 500 meters threshold
-			nearbyReports = append(nearbyReports, report)
+		if report.FilePath == "" {
+			continue
+		}
+
+		hash, err := computeHash(report.FilePath)
+		if err != nil {
+			fmt.Printf("Error hashing image for report %s: %v\n", report.ID, err)
+			continue
+		}
+
+		//hash distance (<=10 similar)
+		difference, err := inputHash.Distance(hash)
+		if err != nil {
+			continue
+		}
+		if difference <= 10 {
+			similarReports = append(similarReports, report)
 		}
 	}
-
-	fmt.Printf("Found %d nearby reports\n", len(nearbyReports))
-	c.JSON(http.StatusOK, gin.H{"similar_reports": nearbyReports})
+	c.JSON(http.StatusOK, gin.H{"similar_reports": similarReports})
 }
