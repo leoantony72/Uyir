@@ -60,7 +60,7 @@ func GetReportsForPolice(c *gin.Context) {
     var reports []model.Report
 
     // Find reports where the type is "accidents" or "traffic jam".
-    if err := Db.Table("reports").Where("type IN (?, ?)", "acccidents", "traffic jam").Find(&reports).Error; err != nil {
+    if err := Db.Table("reports").Where("type IN (?, ?)", "accidents", "traffic jam").Find(&reports).Error; err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{
             "error": "Failed to fetch reports for police: " + err.Error(),
         })
@@ -76,7 +76,7 @@ func GetReportsForPWD(c *gin.Context) {
     var reports []model.Report
 
     // Find reports where the type is "potholes".
-    if err := Db.Table("reports").Where("type = ?", "pothholes").Find(&reports).Error; err != nil {
+    if err := Db.Table("reports").Where("type = ?", "potholes").Find(&reports).Error; err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{
             "error": "Failed to fetch reports for PWD: " + err.Error(),
         })

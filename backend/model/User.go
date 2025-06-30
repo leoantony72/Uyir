@@ -19,6 +19,33 @@ type User struct {
 	FuelType string `json:"fuelType"`
 	VechicleNumber string `json:"vehicleNumber"`
 }
+
+type Hospitals struct{
+	ID        string `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
+	Name      string `json:"name" gorm:"not null"`
+	Address   string `json:"address" gorm:"not null"`
+	Phone     string `json:"phone" gorm:"not null"`
+	Verified   bool   `json:"verified" gorm:"not null;default:false"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`	
+}
+
+type PoliceStation struct {
+	ID        string `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
+	Name      string `json:"name" gorm:"not null"`
+	Address   string `json:"address" gorm:"not null"`
+	Phone     string `json:"phone" gorm:"not null"`
+	Verified   bool   `json:"verified" gorm:"not null;default:false"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
+}
+
+type PWD struct {
+	ID        string `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
+	Name      string `json:"name" gorm:"not null"`
+	Address   string `json:"address" gorm:"not null"`
+	Phone     string `json:"phone" gorm:"not null"`
+	Verified   bool   `json:"verified" gorm:"not null;default:false"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
+}
 type Session struct {
 	ID        uint      `json:"id" gorm:"primaryKey;autoIncrement"`
 	Token     string    `json:"token" gorm:"uniqueIndex;not null"`
