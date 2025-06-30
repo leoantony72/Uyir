@@ -9,7 +9,4 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js', // Ensure PostCSS config is used
   },
-  server: {
-    port:8000
-  }
 });
