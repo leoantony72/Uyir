@@ -7,44 +7,24 @@ import (
 )
 
 type User struct {
-	ID       string `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
-	FirstName string `json:"firstName" gorm:"not null"`
-	LastName  string `json:"lastName" gorm:"not null"`
-	Name     string `json:"username" gorm:"unique;not null"`
-	Email    string `json:"email" gorm:"unique;not null"`
-	Password string `json:"password" gorm:"not null"`
-	Points   int    `json:"points"`
-	Role     string `json:"role"`
-	VechicleType string `json:"vehicleType"`
-	FuelType string `json:"fuelType"`
+	ID             string `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
+	FirstName      string `json:"firstName" gorm:"not null"`
+	LastName       string `json:"lastName" gorm:"not null"`
+	Name           string `json:"username" gorm:"unique;not null"`
+	Email          string `json:"email" gorm:"unique;not null"`
+	Password       string `json:"password" gorm:"not null"`
+	Role           string `json:"role"`
+
+	//these fields are only for user role
+	Points         int    `json:"points"`
+	VechicleType   string `json:"vehicleType"`
+	FuelType       string `json:"fuelType"`
 	VechicleNumber string `json:"vehicleNumber"`
-}
 
-type Hospitals struct{
-	ID        string `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
-	Name      string `json:"name" gorm:"not null"`
-	Address   string `json:"address" gorm:"not null"`
-	Phone     string `json:"phone" gorm:"not null"`
-	Verified   bool   `json:"verified" gorm:"not null;default:false"`
-	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`	
-}
-
-type PoliceStation struct {
-	ID        string `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
-	Name      string `json:"name" gorm:"not null"`
-	Address   string `json:"address" gorm:"not null"`
-	Phone     string `json:"phone" gorm:"not null"`
-	Verified   bool   `json:"verified" gorm:"not null;default:false"`
-	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
-}
-
-type PWD struct {
-	ID        string `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
-	Name      string `json:"name" gorm:"not null"`
-	Address   string `json:"address" gorm:"not null"`
-	Phone     string `json:"phone" gorm:"not null"`
-	Verified   bool   `json:"verified" gorm:"not null;default:false"`
-	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
+	//only for hospital, pwd, police roles
+	Address  string `json:"address" `
+	Phone    string `json:"phone"`
+	Verified bool   `json:"verified" gorm:"not null;default:false"`
 }
 type Session struct {
 	ID        uint      `json:"id" gorm:"primaryKey;autoIncrement"`

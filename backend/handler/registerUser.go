@@ -8,7 +8,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-
 func RegisterUser(c *gin.Context) {
 	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -21,60 +20,44 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 	user.Password = string(hashedPassword)
-	user.Role = "user" // Default role for new users
-	user.Points = 0 // Initialize points to 0
-	
+	user.Verified = false // Always set to false on registration
+
+	if user.Role == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Role is required"})
+		return
+	}
+
+	switch user.Role {
+	case "user":
+		if user.FirstName == "" || user.LastName == "" || user.Name == "" || user.Email == "" || user.Password == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required fields for user"})
+			return
+		}
+		user.Address = ""
+		user.Phone = ""
+		user.Verified = true
+	case "hospital", "police", "pwd":
+		if user.Name == "" || user.Email == "" || user.Password == "" || user.Address == "" || user.Phone == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required fields for " + user.Role})
+			return
+		}
+		// User-specific fields should be empty/zero
+		user.Points = 0
+		user.VechicleType = ""
+		user.FuelType = ""
+		user.VechicleNumber = ""
+		user.FirstName = ""
+		user.LastName = ""
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid role"})
+		return
+	}
+
 	result := Db.Create(&user)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error saving user", "error": result.Error.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User registered", "id": user.ID})
-}
-
-
-func RegisterHospital(c *gin.Context) {
-    var hospital model.Hospitals
-    if err := c.ShouldBindJSON(&hospital); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input", "error": err.Error()})
-        return
-    }
-    hospital.Verified = false 
-    result := Db.Create(&hospital)
-    if result.Error != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"message": "Error saving hospital", "error": result.Error.Error()})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"message": "Hospital registered", "id": hospital.ID})
-}
-
-func RegisterPolice(c *gin.Context) {
-    var police model.PoliceStation
-    if err := c.ShouldBindJSON(&police); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input", "error": err.Error()})
-        return
-    }
-    police.Verified = false // Default to not verified
-    result := Db.Create(&police)
-    if result.Error != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"message": "Error saving police station", "error": result.Error.Error()})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"message": "Police station registered", "id": police.ID})
-}
-
-func RegisterPWD(c *gin.Context) {
-    var pwd model.PWD
-    if err := c.ShouldBindJSON(&pwd); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input", "error": err.Error()})
-        return
-    }
-    pwd.Verified = false // Default to not verified
-    result := Db.Create(&pwd)
-    if result.Error != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"message": "Error saving PWD", "error": result.Error.Error()})
-        return
-    }
-    c.JSON(http.StatusOK, gin.H{"message": "PWD registered", "id": pwd.ID})
+	c.JSON(http.StatusOK, gin.H{"message": "User registered", "id": user.ID, "role": user.Role})
 }

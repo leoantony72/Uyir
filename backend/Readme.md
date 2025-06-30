@@ -14,21 +14,34 @@ http://localhost:6969
 
 #### **POST /signup**
 
-- **Description:** Register a new user.
+- **Description:** Register a new user, hospital, police, or PWD account.
 - **Request Body (JSON):**
-  ```json
-  {
-    "firstName": "string",
-    "lastName": "string",
-    "username": "string",
-    "email": "string",
-    "password": "string",
-    "role": "string",
-    "vehicleType": "string",
-    "fuelType": "string",
-    "vehicleNumber": "string"
-  }
-  ```
+  - For **user** role:
+    ```json
+    {
+      "firstName": "string",
+      "lastName": "string",
+      "username": "string",
+      "email": "string",
+      "password": "string",
+      "role": "user",
+      "vehicleType": "string",
+      "fuelType": "string",
+      "vehicleNumber": "string"
+    }
+    ```
+  - For **hospital**, **police**, or **pwd** roles:
+    ```json
+    {
+      "username": "string",
+      "email": "string",
+      "password": "string",
+      "role": "hospital|police|pwd",
+      "address": "string",
+      "phone": "string"
+    }
+    ```
+  - **Note:** For non-user roles, `firstName`, `lastName`, `vehicleType`, `fuelType`, and `vehicleNumber` are ignored.
 
 #### **POST /login**
 
@@ -92,7 +105,7 @@ http://localhost:6969
 - **Request Body (JSON):**
   ```json
   {
-    "id": "string" // Report ID
+    "id": "string"
   }
   ```
 
@@ -126,5 +139,6 @@ http://localhost:6969
 - Most endpoints that modify or access user-specific data require a valid `session_token` cookie.
 - All POST endpoints expect `Content-Type: application/json` unless otherwise specified.
 - File uploads use `multipart/form-data`.
+- For `/signup`, required fields depend on the `role` provided.
 
 ---
