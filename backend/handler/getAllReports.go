@@ -44,7 +44,7 @@ func GetReportsForHospitals(c *gin.Context) {
     var reports []model.Report
 
     // Find reports where the type is "accidents".
-    if err := Db.Table("reports").Where("type = ?", "acccidents").Find(&reports).Error; err != nil {
+    if err := Db.Table("reports").Where("type = ?", "accidents").Find(&reports).Error; err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{
             "error": "Failed to fetch reports for hospitals: " + err.Error(),
         })
