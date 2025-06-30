@@ -116,11 +116,12 @@ http://localhost:6969
 #### **POST /similarReports**
 
 - **Description:** Get similar reports based on location.
-- **Request Body (JSON):**
+- **Request Type:** `multipart/form-data`
   ```json
   {
     "latitude": float,
     "longitude": float
+    "image": image file
   }
   ```
 
