@@ -10,9 +10,9 @@ import (
 )
 
 var points = map[string]int{
-	"acccidents": 10,
+	"accidents": 10,
 	"traffic jam":   2,
-	"pothholes":   5,
+	"potholes":   5,
 }
 
 func UpdateReportStatus(c *gin.Context) {
