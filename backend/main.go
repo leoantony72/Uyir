@@ -44,6 +44,13 @@ func main() {
 
 	r.POST("/similarReports", handler.SimilarReports)
 
+
+	//admin routes
+	//note: remove the users role from the middleware in production
+	r.GET("admin/users/unverified", handler.RoleMiddleware("admin","user"), handler.GetUnverifiedUsers)
+	r.POST("/admin/users/verify", handler.RoleMiddleware("admin","user"), handler.VerifyUser)
+
+
 	r.GET("/me", handler.Me)
 
 	r.Run(":6969")
