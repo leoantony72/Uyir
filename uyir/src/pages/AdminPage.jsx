@@ -29,7 +29,7 @@ export const AdminDashboard = () => {
   const fetchReports = async () => {
     setIsFetching(true);
     try {
-      const response = await fetch("http://localhost:6969/reports/pending/");
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/reports/pending/`);
       if (!response.ok) throw new Error("Failed to fetch reports");
       const jsonData = await response.json();
       setUpdates(jsonData.data);

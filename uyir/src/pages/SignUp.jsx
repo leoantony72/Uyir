@@ -101,10 +101,11 @@ const SignUp = () => {
       vehicleType: formData.vehicleType,
       fuelType: formData.fuelType,
       vehicleNumber: formData.vehicleNumber,
+      role:"user", //for user signup
     };
 
     try {
-      const response = await fetch('http://localhost:6969/signup', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -26,7 +26,7 @@ export default function ReportTypeSelection() {
       setIsSubmitting(true);
 
       try {
-        const app = await Client.connect("http://127.0.0.1:7860");
+        const app = await Client.connect(`${import.meta.env.VITE_GRADIO_URL}`);
         const result = await app.predict("/predict", [
           handle_file(file),
         ]);

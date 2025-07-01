@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -12,7 +13,10 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8000"}, // Change this if your frontend URL changes
+		AllowOriginFunc: func(origin string) bool {
+			// Allow Codespaces frontend and localhost
+			return strings.HasSuffix(origin, ".app.github.dev") || origin == "http://localhost:5173"
+		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

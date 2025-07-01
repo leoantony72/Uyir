@@ -29,16 +29,16 @@ export const ReportsPage = () => {
   };
 
   useEffect(() => {
-    const storedUserName = getCookie("user_name");
-    if (!storedUserName) {
-      window.location.href = "/login";
-      return;
-    }
+    // const storedUserName = getCookie("user_name");
+    // if (!storedUserName) {
+    //   window.location.href = "/login";
+    //   return;
+    // }
 
     // Fetch reports from /user
     const fetchReports = async () => {
       try {
-        const response = await fetch("http://localhost:6969/user", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
           method: "GET",
           credentials: "include",
         });

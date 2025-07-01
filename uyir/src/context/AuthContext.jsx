@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -8,13 +8,13 @@ export const AuthProvider = ({ children }) => {
 
   // Load user from localStorage on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
       } catch (error) {
-        console.error('Error parsing stored user:', error);
+        console.error("Error parsing stored user:", error);
       }
     }
     setLoading(false);
@@ -23,27 +23,35 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = async (username, password) => {
     try {
-      const response = await fetch('http://localhost:6969/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+          credentials: "include",
+        }
+      );
       if (!response.ok) {
-        throw new Error('Login failed');
+        throw new Error("Login failed");
       }
       const userData = await response.json();
-      console.log('POST /login response:', JSON.stringify(userData, null, 2));
+      console.log("POST /login response:", JSON.stringify(userData, null, 2));
       const normalizedUser = {
-        username: userData.user || userData.username || userData.userName || userData.name || 'Unknown',
+        username:
+          userData.user ||
+          userData.username ||
+          userData.userName ||
+          userData.name ||
+          "Unknown",
         points: userData.points || 0,
-        avatarUrl: userData.avatarUrl || 'https://placehold.co/40x40',
+        avatarUrl: userData.avatarUrl || "https://placehold.co/40x40",
       };
       setUser(normalizedUser);
-      localStorage.setItem('user', JSON.stringify(normalizedUser));
+      localStorage.setItem("user", JSON.stringify(normalizedUser));
       return normalizedUser;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       throw error;
     }
   };
@@ -52,15 +60,15 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       // Attempt logout endpoint (may not exist)
-      await fetch('http://localhost:6969/logout', {
-        method: 'POST',
-        credentials: 'include',
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
+        method: "POST",
+        credentials: "include",
       });
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       setUser(null);
-      localStorage.removeItem('user');
+      localStorage.removeItem("user");
     }
   };
 

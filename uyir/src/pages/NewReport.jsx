@@ -58,7 +58,7 @@ export const NewReport = () => {
   useEffect(() => {
     async function connect() {
       try {
-        const api = await Client.connect("http://127.0.0.1:7860");
+        const api = await Client.connect(`${import.meta.env.VITE_GRADIO_URL}`);
         setApp(api);
       } catch (err) {
         console.error("Gradio client connect error:", err);
@@ -84,12 +84,21 @@ export const NewReport = () => {
       const fetchSimilar = async () => {
         setLoadingSimilarReports(true);
         try {
-          const res = await fetch("http://localhost:6969/similarReports", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify(selectedCoordinates),
-          });
+          const { lat, lng } = selectedCoordinates;
+          const formData = new URLSearchParams();
+          formData.append("latitude", lat);
+          formData.append("longitude", lng);
+          const res = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/similarReports`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              credentials: "include",
+              body: formData.toString(),
+            }
+          );
           const data = await res.json();
           setSimilarReports(data.similar_reports || []);
         } catch (err) {
@@ -124,51 +133,51 @@ export const NewReport = () => {
     fetchAddress(lat, lng);
   };
 
-const handleFileChange = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file || !app) {
-    console.warn("No file selected or Gradio client not initialized");
-    return;
-  }
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !app) {
+      console.warn("No file selected or Gradio client not initialized");
+      return;
+    }
 
-  setSelectedFile(file);
-  setPredictionValid(false);
-  setPredictionResult(null);
-  setIsModelLoading(true); // Indicate processing start
-  const previewUrl = URL.createObjectURL(file);
-  setPreviewUrl(previewUrl);
+    setSelectedFile(file);
+    setPredictionValid(false);
+    setPredictionResult(null);
+    setIsModelLoading(true); // Indicate processing start
+    const previewUrl = URL.createObjectURL(file);
+    setPreviewUrl(previewUrl);
 
-  try {
-    const response = await app.predict("/predict", [file]);
-    console.log("Gradio API Response:", response); // Log full response for debugging
-    const confidences = response.data?.[0]?.confidences; // Access nested confidences array
+    try {
+      const response = await app.predict("/predict", [file]);
+      console.log("Gradio API Response:", response); // Log full response for debugging
+      const confidences = response.data?.[0]?.confidences; // Access nested confidences array
 
-    if (Array.isArray(confidences) && confidences.length > 0) {
-      // Find the prediction with the highest confidence
-      const top = confidences.reduce((max, curr) =>
-        curr.confidence > max.confidence ? curr : max
-      );
-      console.log("Top prediction:", top); // Log top prediction
+      if (Array.isArray(confidences) && confidences.length > 0) {
+        // Find the prediction with the highest confidence
+        const top = confidences.reduce((max, curr) =>
+          curr.confidence > max.confidence ? curr : max
+        );
+        console.log("Top prediction:", top); // Log top prediction
 
-      setPredictionResult({
-        type: top.label,
-        probability: top.confidence,
-      });
-      setSelectedType(top.label);
-      setPredictionValid(true);
-    } else {
-      console.warn("Confidences array is empty or invalid:", confidences);
+        setPredictionResult({
+          type: top.label,
+          probability: top.confidence,
+        });
+        setSelectedType(top.label);
+        setPredictionValid(true);
+      } else {
+        console.warn("Confidences array is empty or invalid:", confidences);
+        setPredictionResult({ type: "unknown", probability: null });
+        setPredictionValid(false);
+      }
+    } catch (err) {
+      console.error("Prediction failed:", err);
       setPredictionResult({ type: "unknown", probability: null });
       setPredictionValid(false);
+    } finally {
+      setIsModelLoading(false); // Reset loading state
     }
-  } catch (err) {
-    console.error("Prediction failed:", err);
-    setPredictionResult({ type: "unknown", probability: null });
-    setPredictionValid(false);
-  } finally {
-    setIsModelLoading(false); // Reset loading state
-  }
-};
+  };
 
   const handleSubmit = async () => {
     //send data to backend !!!!
@@ -432,22 +441,23 @@ const handleFileChange = async (e) => {
                       />
                     </div>
                   )}
-{predictionResult && (
-  <div className="mt-3">
-    <p className="text-sm">
-      <strong>AI Prediction:</strong> {predictionResult.type}
-      {typeof predictionResult.probability === "number" ? (
-        <span className="text-green-600">
-          ({(predictionResult.probability * 100).toFixed(2)}% confidence)
-        </span>
-      ) : (
-        <span className="text-yellow-500">(confidence not available)</span>
-      )}
-    </p>
-  </div>
-)}
-
-
+                  {predictionResult && (
+                    <div className="mt-3">
+                      <p className="text-sm">
+                        <strong>AI Prediction:</strong> {predictionResult.type}
+                        {typeof predictionResult.probability === "number" ? (
+                          <span className="text-green-600">
+                            ({(predictionResult.probability * 100).toFixed(2)}%
+                            confidence)
+                          </span>
+                        ) : (
+                          <span className="text-yellow-500">
+                            (confidence not available)
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Submit Button */}

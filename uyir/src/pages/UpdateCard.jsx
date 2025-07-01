@@ -8,7 +8,7 @@ const UpdateCard = ({ id, type, location, longitude, latitude, date, status, onS
     if (localStatus !== "Pending") return; // Prevent unnecessary calls
 
     try {
-      const response = await fetch("http://localhost:6969/reports/updateStatus", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/reports/updateStatus`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
