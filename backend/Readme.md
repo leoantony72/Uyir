@@ -135,6 +135,52 @@ http://localhost:6969
 
 ---
 
+## Admin User Verification Endpoints
+
+### **GET /admin/users/unverified**
+
+- **Description:** Retrieve all users who are not yet verified.
+- **Access:** Only accessible to users with the `admin` role.
+- **Response Example:**
+  ```json
+  [
+    {
+      "id": "string",
+      "firstName": "string",
+      "lastName": "string",
+      "username": "string",
+      "email": "string",
+      "role": "string",
+      "vehicleType": "string",
+      "fuelType": "string",
+      "vehicleNumber": "string",
+      "address": "string",
+      "phone": "string",
+      "verified": false
+    }
+    // ... more users
+  ]
+  ```
+
+---
+
+### **POST /admin/users/verify**
+
+- **Description:** Set a user's `verified` status to `true` based on their ID.
+- **Access:** Only accessible to users with the `admin` role.
+- **Request Body (JSON):**
+  ```json
+  {
+    "id": "user-id-string"
+  }
+  ```
+- **Response Example:**
+  ```json
+  {
+    "message": "User verified",
+    "id": "user-id-
+
+    
 ## Notes
 
 - Most endpoints that modify or access user-specific data require a valid `session_token` cookie.
